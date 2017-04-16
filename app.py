@@ -43,7 +43,7 @@ def hello():
     return str(resp)
 
 def random_joke():
-    return "What’s brown and sticky? \n\n\n\nA stick."
+    return "Test"
 
 if __name__ == "__main__":
     app.run(debug=True)
