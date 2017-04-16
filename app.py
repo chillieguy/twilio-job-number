@@ -2,6 +2,7 @@ from flask import Flask, request, session
 from twilio.twiml.messaging_response import MessagingResponse
 from datetime import timedelta
 import os
+import random
 
 # The session object makes use of a secret key.
 SECRET_KEY = 'abc'
@@ -9,8 +10,12 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.permanent_session_lifetime = timedelta(seconds=30)
 
-@app.route("/sms", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def hello():
+    return "This is not the page you are looking for."
+
+@app.route("/sms", methods=['GET', 'POST'])
+def sms():
     """Respond with the number of text messages sent between two parties."""
     # Increment the counter
     counter = session.get('counter', 0)
@@ -43,7 +48,16 @@ def hello():
     return str(resp)
 
 def random_joke():
-    return "Test"
+    jokes = [
+        "Why do trees seem suspicious on sunny days? \n\nDunno, they're just a bit shady.",
+        "What did they give the guy who inventred the doorknocker? \n\nA no-bell prize.",
+        "What do you call a fake noodle? \n\nAn impasta.",
+        "What do you call a bear with no teeth? \n\nA gummy bear.",
+        "I bought some shoes from a drug dealer. I don't know what he laced them with, but I've been tripping all day."
+    ]
+
+
+    return random.choice(jokes)
 
 if __name__ == "__main__":
     app.debug = True
