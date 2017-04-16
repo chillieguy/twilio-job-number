@@ -1,4 +1,5 @@
 # Virtual Workspace
+.env
 venv/
 
 #VSCode
