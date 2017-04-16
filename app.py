@@ -1,11 +1,20 @@
 from flask import Flask, request, session
 from twilio.twiml.messaging_response import MessagingResponse
+from twilio.twiml.voice_response import VoiceResponse
+from twilio.rest import Client
 from datetime import timedelta
 import os
+from os import environ
 import random
 
 # The session object makes use of a secret key.
 SECRET_KEY = 'abc'
+
+ACCOUNT_SID = environ.get('ACCOUNT-SID')
+AUTH_TOKEN = environ.get('AUTH-TOKEN')
+
+client = Client(ACCOUNT_SID, AUTH_TOKEN)
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.permanent_session_lifetime = timedelta(seconds=30)
@@ -13,6 +22,25 @@ app.permanent_session_lifetime = timedelta(seconds=30)
 @app.route("/", methods=['GET', 'POST'])
 def hello():
     return "This is not the page you are looking for."
+
+@app.route("/call", methods=['GET', 'POST'])
+def call():
+    """Make outbound call """
+    call = client.api.account.calls.create(to="+15416391136",  # Any phone number
+              from_="+15417145139", # Must be a valid Twilio number
+              url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
+            
+    
+    return
+
+@app.route("/voice", methods=['GET', 'POST'])
+def voice():
+    """Respond to incoming requests."""
+    r = VoiceResponse()
+    r.say("Hello.  Thank you for calling the Chuck Underwood job line.  To be connected with Chuck immediately please press one.  To get a link to Chuck's resume please press two.  I look forward to talking to you.  Have a wonderful day.")
+
+    return str(r)
+    
 
 @app.route("/sms", methods=['GET', 'POST'])
 def sms():
@@ -33,7 +61,7 @@ def sms():
     
     if counter > 1:
         if request.values.get('Body') == '1':
-            message = "You picked option 1"
+            return redirect(url_for('call'))
         elif request.values.get('Body') == '2':
             message = "https://chillieguy.com/resume"
         elif request.values.get('Body') == '3':
