@@ -126,7 +126,7 @@ def call():
               from_="+15417145139", # Must be a valid Twilio number
               url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
 
-async def send_to_gsheets(sender, type_of_contact="NA"):
+async def send_to_gsheets(sender, type_of_contact):
     await sheet.insert_row([sender, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), type_of_contact], index=1)
 
 if __name__ == "__main__":
