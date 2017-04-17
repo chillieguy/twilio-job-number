@@ -35,7 +35,7 @@ def hello():
 def voice():
     """Respond to incoming requests."""
     resp = VoiceResponse()
-    resp.say("Hello.  Thank you for calling the Chuck Underwood job line. Please wait while you are connected to Chuck.")
+    resp.say("Hello.  Thank you for calling Chuck Underwood. It will be just a moment while you are connected.")
     resp.dial("+15416391136")
 
     return str(resp)
@@ -62,7 +62,7 @@ def sms():
     if counter > 1:
         # When counter is greater than one as for response
         if request.values.get('Body') == '1':
-            message = client.api.account.messages.create(to="+15416391136", from_="+15417145139",body="{} is requesting a call back.".format(sender))
+            message = client.api.account.messages.create(to="+15416391136", from_="+15417145139",body="{} is requesting a call back. \nChuck will call you back immediately if possible.  Otherwise he will call ASAP.".format(sender))
             message =  "Call request sent to Chuck for {}".format(sender)
             # Moved to seperate function
             #junk = call()
@@ -103,18 +103,8 @@ def random_joke():
 
     return random.choice(jokes)
 
-# Made a seperate function to keep code DRY
-def call(sender):
-    """Helper function to make outbound call """
-    #call = client.api.account.calls.create(to="+15416391136", from_="+15417145139", url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
-    r = MessagingResponse()
-    message = "{} is requesting a call back.".format(sender)
-    r.message(message)
-
-    return str(r)
-
 if __name__ == "__main__":
-    app.debug = True
+    #app.debug = True
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
     
