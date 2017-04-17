@@ -11,7 +11,6 @@ import random
 import gspread
 import time
 from oauth2client.service_account import ServiceAccountCredentials
-import asyncio
 
 # The session object makes use of a secret key.
 SECRET_KEY = 'thequickbrownfoxjumpedoverthelazydog'
@@ -126,8 +125,8 @@ def call():
               from_="+15417145139", # Must be a valid Twilio number
               url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
 
-async def send_to_gsheets(sender, type_of_contact):
-    await sheet.insert_row([sender, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), type_of_contact], index=1)
+def send_to_gsheets(sender, type_of_contact):
+    sheet.insert_row([sender, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), type_of_contact], index=1)
 
 if __name__ == "__main__":
     app.debug = True
