@@ -9,21 +9,27 @@ from os import environ
 import random
 
 # The session object makes use of a secret key.
-SECRET_KEY = 'abcd'
+SECRET_KEY = 'thequickbrownfoxjobsoverthelazydog'
 
+# Get secrets from Heroku enviroment
 ACCOUNT_SID = environ.get('ACCOUNT-SID')
 AUTH_TOKEN = environ.get('AUTH-TOKEN')
 
+# Create Twilio client
 client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
+# Set up Flask app, set session time out to 30 seconds
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.permanent_session_lifetime = timedelta(seconds=30)
 
+# Default route incase someone visits site root page
 @app.route("/", methods=['GET', 'POST'])
 def hello():
+    '''Default to respond to visiting the page in a web browser '''
     return "This is not the page you are looking for."
 
+# Route used by Twilio when a call is placed to Twilio phone number
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     """Respond to incoming requests."""
@@ -46,13 +52,15 @@ def sms():
     message = "Hello World"
 
     if counter == 1:
-        
+        # When receiving first sms of session send welcome message
         # Build our reply
         message = "You have reached Chuck Underwood \n\nRespond with your choice: \n1) Call Chuck immediatley \n2) Go to Chuck's resume \n3) Random Joke \n\nThank you for your interest"
     
     if counter > 1:
+        # When counter is greater than one as for response
         if request.values.get('Body') == '1':
             message =  "Calling"
+            # Moved to seperate function
             call()
         elif request.values.get('Body') == '2':
             message = "https://chillieguy.com/resume"
@@ -68,6 +76,7 @@ def sms():
     return str(r)
 
 def random_joke():
+    '''Return random joke from array'''
     jokes = [
         "Why do trees seem suspicious on sunny days? \n\nDunno, they're just a bit shady.",
         "What did they give the guy who inventred the doorknocker? \n\nA no-bell prize.",
@@ -88,9 +97,9 @@ def random_joke():
         "A computer once beat me at chess, but it was no match for me at kick boxing."
     ]
 
-
     return random.choice(jokes)
 
+# Made a seperate function to keep code DRY
 def call():
     """Helper function to make outbound call """
     call = client.api.account.calls.create(to="+15416391136",  # Any phone number
