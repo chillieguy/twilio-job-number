@@ -3,13 +3,17 @@ from twilio import twiml
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
-from datetime import timedelta
+from datetime import timedelta, datetime
 import os
+import json
 from os import environ
 import random
+import gspread
+import time
+from oauth2client.service_account import ServiceAccountCredentials
 
 # The session object makes use of a secret key.
-SECRET_KEY = 'thequickbrownfoxjobsoverthelazydog'
+SECRET_KEY = 'thequickbrownfoxjumpedoverthelazydog'
 
 # Get secrets from Heroku enviroment
 ACCOUNT_SID = environ.get('ACCOUNT-SID')
@@ -22,6 +26,15 @@ client = Client(ACCOUNT_SID, AUTH_TOKEN)
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.permanent_session_lifetime = timedelta(seconds=30)
+
+# use creds to create a client to interact with the Google Drive API
+scope = ['https://spreadsheets.google.com/feeds']
+creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+gspread_client = gspread.authorize(creds)
+
+# Find a workbook by name and open the first sheet
+# Make sure you use the right name here.
+sheet = gspread_client.open("twilio contacts").sheet1
 
 # Default route incase someone visits site root page
 @app.route("/", methods=['GET', 'POST'])
@@ -37,6 +50,7 @@ def voice():
     resp.say("Hello.  Thank you for calling the Chuck Underwood job line. Please wait while you are connected to Chuck.")
     resp.dial("+15416391136")
 
+    sheet.insert_row([request.values.get('From', None) ,datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Call"], index=1)
     return str(resp)
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -72,6 +86,8 @@ def sms():
     # Put it in a TwiML response
     r = MessagingResponse()
     r.message(message)
+
+    sheet.insert_row([request.values.get('From', None), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "SMS"], index=1)
 
     return str(r)
 
