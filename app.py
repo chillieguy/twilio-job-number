@@ -52,6 +52,8 @@ def sms():
 
     message = "Hello World"
 
+    sender = request.values.get('From', None)
+
     if counter == 1:
         # When receiving first sms of session send welcome message
         # Build our reply
@@ -60,9 +62,10 @@ def sms():
     if counter > 1:
         # When counter is greater than one as for response
         if request.values.get('Body') == '1':
-            message =  "Calling"
+            message =  "Call request sent to Chuck for {}".format(sender)
             # Moved to seperate function
-            call()
+            junk = call()
+            
         elif request.values.get('Body') == '2':
             message = "https://chillieguy.com/resume"
         elif request.values.get('Body') == '3':
@@ -101,21 +104,17 @@ def random_joke():
     return random.choice(jokes)
 
 # Made a seperate function to keep code DRY
-def call():
+def call(sender):
     """Helper function to make outbound call """
-    call = client.api.account.calls.create(to="+15416391136",  # Any phone number
-              from_="+15417145139", # Must be a valid Twilio number
-              url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
-    response = VoiceResponse()
-    dial = Dial()
-    dial.conference('My conference',startConferenceOnEnter=True,endConferenceOnExit=True)
+    #call = client.api.account.calls.create(to="+15416391136", from_="+15417145139", url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
+    r = MessagingResponse()
+    message = "{} is requesting a call back.".format(sender)
+    r.message(message)
 
-    return str(response.append(dial))
+    return str(r)
 
 if __name__ == "__main__":
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
     
-
-
