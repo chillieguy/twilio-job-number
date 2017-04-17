@@ -4,5 +4,3 @@ venv/
 
 #VSCode
 .vscode/
-
-client_secret.json
