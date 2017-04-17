@@ -8,9 +8,6 @@ import os
 import json
 from os import environ
 import random
-import gspread
-import time
-from oauth2client.service_account import ServiceAccountCredentials
 
 # The session object makes use of a secret key.
 SECRET_KEY = 'thequickbrownfoxjumpedoverthelazydog'
@@ -27,15 +24,6 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.permanent_session_lifetime = timedelta(seconds=30)
 
-# use creds to create a client to interact with the Google Drive API
-scope = ['https://spreadsheets.google.com/feeds']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-gspread_client = gspread.authorize(creds)
-
-# Find a workbook by name and open the first sheet
-# Make sure you use the right name here.
-sheet = gspread_client.open("twilio contacts").sheet1
-
 # Default route incase someone visits site root page
 @app.route("/", methods=['GET', 'POST'])
 def hello():
@@ -49,9 +37,6 @@ def voice():
     resp = VoiceResponse()
     resp.say("Hello.  Thank you for calling the Chuck Underwood job line. Please wait while you are connected to Chuck.")
     resp.dial("+15416391136")
-
-    sender = request.values.get('From', None)
-    send_to_gsheets(sender, "Call")
 
     return str(resp)
 
@@ -89,9 +74,6 @@ def sms():
     r = MessagingResponse()
     r.message(message)
 
-    sender = request.values.get('From', None)
-    send_to_gsheets(sender, "SMS")
-
     return str(r)
 
 def random_joke():
@@ -124,9 +106,6 @@ def call():
     call = client.api.account.calls.create(to="+15416391136",  # Any phone number
               from_="+15417145139", # Must be a valid Twilio number
               url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
-
-def send_to_gsheets(sender, type_of_contact):
-    sheet.insert_row([sender, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), type_of_contact], index=1)
 
 if __name__ == "__main__":
     app.debug = True
