@@ -11,6 +11,7 @@ import random
 import gspread
 import time
 from oauth2client.service_account import ServiceAccountCredentials
+import asyncio
 
 # The session object makes use of a secret key.
 SECRET_KEY = 'thequickbrownfoxjumpedoverthelazydog'
@@ -50,7 +51,9 @@ def voice():
     resp.say("Hello.  Thank you for calling the Chuck Underwood job line. Please wait while you are connected to Chuck.")
     resp.dial("+15416391136")
 
-    sheet.insert_row([request.values.get('From', None) ,datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Call"], index=1)
+    sender = request.values.get('From', None)
+    send_to_gsheets(sender, "Call")
+
     return str(resp)
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -87,7 +90,8 @@ def sms():
     r = MessagingResponse()
     r.message(message)
 
-    sheet.insert_row([request.values.get('From', None), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "SMS"], index=1)
+    sender = request.values.get('From', None)
+    send_to_gsheets(sender, "SMS")
 
     return str(r)
 
@@ -121,6 +125,9 @@ def call():
     call = client.api.account.calls.create(to="+15416391136",  # Any phone number
               from_="+15417145139", # Must be a valid Twilio number
               url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
+
+async def send_to_gsheets(sender, type_of_contact="NA"):
+    await sheet.insert_row([sender, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), type_of_contact], index=1)
 
 if __name__ == "__main__":
     app.debug = True
