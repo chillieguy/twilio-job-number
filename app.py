@@ -106,6 +106,11 @@ def call():
     call = client.api.account.calls.create(to="+15416391136",  # Any phone number
               from_="+15417145139", # Must be a valid Twilio number
               url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
+    response = VoiceResponse()
+    dial = Dial()
+    dial.conference('My conference',startConferenceOnEnter=True,endConferenceOnExit=True)
+
+    return str(response.append(dial))
 
 if __name__ == "__main__":
     app.debug = True
