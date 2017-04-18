@@ -62,10 +62,10 @@ def sms():
     if counter > 1:
         # When counter is greater than one as for response
         if request.values.get('Body') == '1':
-            message = client.api.account.messages.create(to="+15416391136", from_="+15417145139",body="{} is requesting a call back.".format(sender)
-            message1 =  "Call request sent to Chuck for {}.\nChuck will call you back immediately if possible.  Otherwise he will call ASAP".format(sender)
+            message_send = client.api.account.messages.create(to="+15416391136", from_="+15417145139",body="{} is requesting a call back.".format(sender)
+            # message =  "Call request sent to Chuck for {}.\nChuck will call you back immediately if possible.  Otherwise he will call ASAP".format(sender)
             # Moved to seperate function
-            #junk = call()
+            # junk = call()
         elif request.values.get('Body') == '2':
             message = "https://chillieguy.com/resume"
         elif request.values.get('Body') == '3':
