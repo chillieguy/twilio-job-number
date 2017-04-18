@@ -57,7 +57,7 @@ def sms():
     if counter == 1:
         # When receiving first sms of session send welcome message
         # Build our reply
-        message = "You have reached Chuck Underwood \n\nRespond with your choice: \n1) Call Chuck immediatley \n2) Go to Chuck's resume \n3) Random Joke \n\nThank you for your interest"
+        message = "You have reached Chuck Underwood \n\nRespond with your choice: \n1) Request call with Chuck \n2) Go to Chuck's resume \n3) Random Joke \n\nThank you for your interest"
     
     if counter > 1:
         # When counter is greater than one as for response
