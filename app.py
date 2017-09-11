@@ -19,10 +19,10 @@ AUTH_TOKEN = environ.get('AUTH-TOKEN')
 # Create Twilio client
 client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-# Set up Flask app, set session time out to 30 seconds
+# Set up Flask app, set session time out to 60 seconds
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.permanent_session_lifetime = timedelta(seconds=30)
+app.permanent_session_lifetime = timedelta(seconds=60)
 
 # Default route incase someone visits site root page
 @app.route("/", methods=['GET', 'POST'])
@@ -79,7 +79,8 @@ def sms():
     return str(r)
 
 def send_request(sender):
-    message_send = client.api.account.messages.create(to="+15416391136", from_="+15417145139",body="{} is requesting a call back.".format(sender)
+    message_send = client.api.account.messages.create(to="+15416391136", from_="+15417145139", body="{} is requesting a call back.".format(sender))
+
 
 def random_joke():
     '''Return random joke from array'''
